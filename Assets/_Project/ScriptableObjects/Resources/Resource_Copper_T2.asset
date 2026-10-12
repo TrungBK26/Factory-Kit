@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21ce6f7917717334aa457c089958591a, type: 3}
+  m_Name: Resource_Copper_T2
+  m_EditorClassIdentifier: Assembly-CSharp::ResourceDataSO
+  resourceName: "\u0110\u1ED3ng C\u1EA5p 2"
+  resourceType: 2
+  tier: 2
+  baseValue: 45
+  itemPrefab: {fileID: 5878969004952390712, guid: c50c61785da664d45a1c8dc0a3bb7ee9, type: 3}
+  resourceIcon: {fileID: 0}
