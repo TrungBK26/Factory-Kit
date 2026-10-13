@@ -127,13 +127,13 @@ public class MachineCardView : MonoBehaviour
 
     private static string GetResourceEmoji(ResourceType type) => type switch
     {
-        ResourceType.Wood => "🌲",
-        ResourceType.Stone => "⛏️",
-        ResourceType.Copper => "🥉",
-        ResourceType.Iron => "🔩",
-        ResourceType.Silver => "🥈",
-        ResourceType.Gold => "🥇",
-        _ => "⚙️"
+        ResourceType.Wood => "[GỖ]",
+        ResourceType.Stone => "[ĐÁ]",
+        ResourceType.Copper => "[ĐỒNG]",
+        ResourceType.Iron => "[SẮT]",
+        ResourceType.Silver => "[BẠC]",
+        ResourceType.Gold => "[VÀNG]",
+        _ => "[MÁY]"
     };
 
     public void UpdateDisplay()

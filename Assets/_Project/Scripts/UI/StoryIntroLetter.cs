@@ -204,7 +204,7 @@ public class StoryIntroLetter : MonoBehaviour
         UIThemeManager.Initialize();
         bool isHovered = btnRect.Contains(Event.current.mousePosition);
         GUI.backgroundColor = isHovered ? new Color(0.40f, 0.95f, 0.40f) : new Color(0.32f, 0.85f, 0.35f);
-        if (GUI.Button(btnRect, "<size=15><b>🏭 TIẾP NHẬN CÔNG XƯỞNG & BẮT ĐẦU</b></size>", UIThemeManager.ButtonStyle))
+        if (GUI.Button(btnRect, "<size=15><b>TIẾP NHẬN CÔNG XƯỞNG & BẮT ĐẦU</b></size>", UIThemeManager.ButtonStyle))
         {
             CloseLetter();
         }

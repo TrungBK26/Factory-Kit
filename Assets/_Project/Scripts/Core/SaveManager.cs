@@ -11,8 +11,10 @@ public class SaveManager : MonoBehaviour
 {
     public static SaveManager Instance { get; private set; }
 
-    private const string SAVE_KEY = "FactoryReborn_SaveData";
+    public const string SAVE_KEY = "FactoryReborn_SaveData";
     private const float AUTO_SAVE_INTERVAL = 30f; // Tự động lưu mỗi 30 giây
+
+    public bool HasSaveData => PlayerPrefs.HasKey(SAVE_KEY);
 
     [Header("--- THIẾT LẬP AUTO-SAVE ---")]
     [SerializeField] private bool autoSaveEnabled = true;

@@ -25,6 +25,7 @@ public class SettingsPopup : MonoBehaviour
 
     private bool isOpen = false;
     private MenuTab currentTab = MenuTab.Settings;
+    public MenuTab CurrentTab => currentTab;
     private string saveFeedbackText = string.Empty;
     private float saveFeedbackTimer = 0f;
     private float lastToggleTime = -10f;
@@ -107,42 +108,39 @@ public class SettingsPopup : MonoBehaviour
 
     private void Update()
     {
-        bool hPressed = false;
-        bool escPressed = false;
+        // Nếu InputManager vắng mặt (fallback), xử lý an toàn có cooldown chống toggle 2 lần
+        if (InputManager.Instance == null)
+        {
+            bool hPressed = false;
+            bool escPressed = false;
 
 #if ENABLE_INPUT_SYSTEM
-        var kb = UnityEngine.InputSystem.Keyboard.current;
-        if (kb != null)
-        {
-            if (kb.hKey.wasPressedThisFrame) hPressed = true;
-            if (kb.escapeKey.wasPressedThisFrame) escPressed = true;
-        }
+            var kb = UnityEngine.InputSystem.Keyboard.current;
+            if (kb != null)
+            {
+                if (kb.hKey.wasPressedThisFrame) hPressed = true;
+                if (kb.escapeKey.wasPressedThisFrame) escPressed = true;
+            }
 #endif
-
-        try
-        {
-            if (Input.GetKeyDown(KeyCode.H)) hPressed = true;
-            if (Input.GetKeyDown(KeyCode.Escape)) escPressed = true;
-        }
-        catch { }
-
-        // 1. Phím H: Mở nhanh Hướng dẫn chơi
-        if (hPressed)
-        {
-            if (isOpen && currentTab == MenuTab.Tutorial)
+            try
             {
-                CloseMenu();
+                if (Input.GetKeyDown(KeyCode.H)) hPressed = true;
+                if (Input.GetKeyDown(KeyCode.Escape)) escPressed = true;
             }
-            else
-            {
-                OpenTutorial();
-            }
-        }
+            catch { }
 
-        // 2. Phím Esc: Đóng menu nếu đang mở
-        if (escPressed && isOpen)
-        {
-            CloseMenu();
+            if (escPressed && Time.unscaledTime - lastToggleTime > 0.25f)
+            {
+                lastToggleTime = Time.unscaledTime;
+                if (isOpen) CloseMenu();
+                else OpenSettings();
+            }
+            else if (hPressed && Time.unscaledTime - lastToggleTime > 0.25f)
+            {
+                lastToggleTime = Time.unscaledTime;
+                if (isOpen && currentTab == MenuTab.Tutorial) CloseMenu();
+                else OpenTutorial();
+            }
         }
 
         // Đếm ngược thông báo lưu game
@@ -218,23 +216,11 @@ public class SettingsPopup : MonoBehaviour
     // ==================== ONGUI RENDERER ====================
     private void OnGUI()
     {
-        UIThemeManager.Initialize();
+        // Không vẽ khi MainMenu hoặc Thư mở đầu đang hoạt động
+        if (MainMenuUI.Instance != null && MainMenuUI.Instance.IsOpen) return;
+        if (StoryIntroLetter.Instance != null && StoryIntroLetter.Instance.IsOpen) return;
 
-        if (Event.current != null && Event.current.type == EventType.KeyDown)
-        {
-            if (Event.current.keyCode == KeyCode.Escape)
-            {
-                if (isOpen) CloseMenu();
-                else OpenSettings();
-                Event.current.Use();
-            }
-            else if (Event.current.keyCode == KeyCode.H)
-            {
-                if (isOpen && currentTab == MenuTab.Tutorial) CloseMenu();
-                else OpenTutorial();
-                Event.current.Use();
-            }
-        }
+        UIThemeManager.Initialize();
 
         // 1. Luôn vẽ 2 nút tiện ích nhỏ ở góc trên phải màn hình khi chưa mở menu
         if (!isOpen)
@@ -244,13 +230,13 @@ public class SettingsPopup : MonoBehaviour
             float margin = 15f;
 
             // Nút Cài đặt
-            if (GUI.Button(new Rect(Screen.width - (btnW * 2) - margin - 8, margin, btnW, btnH), "⚙️ Cài Đặt (Esc)", UIThemeManager.ButtonSmallStyle))
+            if (GUI.Button(new Rect(Screen.width - (btnW * 2) - margin - 8, margin, btnW, btnH), "Cài Đặt (Esc)", UIThemeManager.ButtonSmallStyle))
             {
                 OpenSettings();
             }
 
             // Nút Hướng dẫn
-            if (GUI.Button(new Rect(Screen.width - btnW - margin, margin, btnW, btnH), "📖 Hướng Dẫn (H)", UIThemeManager.ButtonSmallStyle))
+            if (GUI.Button(new Rect(Screen.width - btnW - margin, margin, btnW, btnH), "Hướng Dẫn (H)", UIThemeManager.ButtonSmallStyle))
             {
                 OpenTutorial();
             }
@@ -278,7 +264,7 @@ public class SettingsPopup : MonoBehaviour
 
         bool isSettings = currentTab == MenuTab.Settings;
         GUI.backgroundColor = isSettings ? Color.white : new Color(0.72f, 0.66f, 0.60f);
-        string settingsTitle = isSettings ? "<b>⚙️ Cài Đặt (Settings)</b>" : "⚙️ Cài Đặt (Settings)";
+        string settingsTitle = isSettings ? "<b>Cài Đặt (Settings)</b>" : "Cài Đặt (Settings)";
         if (GUILayout.Button(settingsTitle, UIThemeManager.ButtonStyle, GUILayout.Height(36)))
         {
             currentTab = MenuTab.Settings;
@@ -286,7 +272,7 @@ public class SettingsPopup : MonoBehaviour
 
         bool isTuto = currentTab == MenuTab.Tutorial;
         GUI.backgroundColor = isTuto ? Color.white : new Color(0.72f, 0.66f, 0.60f);
-        string tutoTitle = isTuto ? "<b>📖 Hướng Dẫn (Tutorial)</b>" : "📖 Hướng Dẫn (Tutorial)";
+        string tutoTitle = isTuto ? "<b>Hướng Dẫn (Tutorial)</b>" : "Hướng Dẫn (Tutorial)";
         if (GUILayout.Button(tutoTitle, UIThemeManager.ButtonStyle, GUILayout.Height(36)))
         {
             currentTab = MenuTab.Tutorial;
@@ -321,7 +307,7 @@ public class SettingsPopup : MonoBehaviour
         GUILayout.BeginVertical(UIThemeManager.InteriorBoxStyle, GUILayout.MinHeight(350));
 
         // 1. Nhóm Điều chỉnh Âm thanh
-        GUILayout.Label("<size=15><b>🎵 ĐIỀU CHỈNH ÂM THANH TRÒ CHƠI</b></size>", UIThemeManager.SubHeaderStyle);
+        GUILayout.Label("<size=15><b>ĐIỀU CHỈNH ÂM THANH TRÒ CHƠI</b></size>", UIThemeManager.SubHeaderStyle);
         GUILayout.Space(6);
 
         // BGM Slider
@@ -329,7 +315,7 @@ public class SettingsPopup : MonoBehaviour
         GUILayout.BeginHorizontal();
         GUILayout.Label($"Nhạc nền (BGM): <b>{Mathf.RoundToInt(bgm * 100)}%</b>", UIThemeManager.LabelStyle, GUILayout.Width(170));
         float newBgm = GUILayout.HorizontalSlider(bgm, 0f, 1f, GUILayout.Height(20));
-        if (GUILayout.Button(bgm > 0.05f ? "🔇 Tắt" : "🔊 Bật", UIThemeManager.ButtonSmallStyle, GUILayout.Width(65), GUILayout.Height(22)))
+        if (GUILayout.Button(bgm > 0.05f ? "Tắt" : "Bật", UIThemeManager.ButtonSmallStyle, GUILayout.Width(65), GUILayout.Height(22)))
         {
             newBgm = bgm > 0.05f ? 0f : 0.8f;
         }
@@ -343,7 +329,7 @@ public class SettingsPopup : MonoBehaviour
         GUILayout.BeginHorizontal();
         GUILayout.Label($"Hiệu ứng (SFX): <b>{Mathf.RoundToInt(sfx * 100)}%</b>", UIThemeManager.LabelStyle, GUILayout.Width(170));
         float newSfx = GUILayout.HorizontalSlider(sfx, 0f, 1f, GUILayout.Height(20));
-        if (GUILayout.Button(sfx > 0.05f ? "🔇 Tắt" : "🔊 Bật", UIThemeManager.ButtonSmallStyle, GUILayout.Width(65), GUILayout.Height(22)))
+        if (GUILayout.Button(sfx > 0.05f ? "Tắt" : "Bật", UIThemeManager.ButtonSmallStyle, GUILayout.Width(65), GUILayout.Height(22)))
         {
             newSfx = sfx > 0.05f ? 0f : 1.0f;
         }
@@ -353,11 +339,11 @@ public class SettingsPopup : MonoBehaviour
         GUILayout.Space(12);
 
         // 2. Nhóm Lưu & Nạp Tiến Trình
-        GUILayout.Label("<size=15><b>💾 QUẢN LÝ TIẾN TRÌNH & DỮ LIỆU</b></size>", UIThemeManager.SubHeaderStyle);
+        GUILayout.Label("<size=15><b>QUẢN LÝ TIẾN TRÌNH & DỮ LIỆU</b></size>", UIThemeManager.SubHeaderStyle);
         GUILayout.Space(6);
 
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("💾 Lưu Tiến Trình Ngay", UIThemeManager.ButtonStyle, GUILayout.Height(32)))
+        if (GUILayout.Button("Lưu Tiến Trình Ngay", UIThemeManager.ButtonStyle, GUILayout.Height(32)))
         {
             if (SaveManager.Instance != null)
             {
@@ -367,7 +353,7 @@ public class SettingsPopup : MonoBehaviour
             }
         }
 
-        if (GUILayout.Button("📂 Nạp Lại Bản Lưu", UIThemeManager.ButtonStyle, GUILayout.Height(32)))
+        if (GUILayout.Button("Nạp Lại Bản Lưu", UIThemeManager.ButtonStyle, GUILayout.Height(32)))
         {
             if (SaveManager.Instance != null)
             {
@@ -389,10 +375,10 @@ public class SettingsPopup : MonoBehaviour
         GUILayout.Space(12);
 
         // 3. Nhóm Điều Hướng & Hệ Thống
-        GUILayout.Label("<size=15><b>🏠 MENU & HỆ THỐNG</b></size>", UIThemeManager.SubHeaderStyle);
+        GUILayout.Label("<size=15><b>MENU & HỆ THỐNG</b></size>", UIThemeManager.SubHeaderStyle);
         GUILayout.Space(6);
 
-        if (GUILayout.Button("🏠 Về Menu Chính (Main Menu)", UIThemeManager.ButtonStyle, GUILayout.Height(34)))
+        if (GUILayout.Button("Về Menu Chính (Main Menu)", UIThemeManager.ButtonStyle, GUILayout.Height(34)))
         {
             if (SaveManager.Instance != null) SaveManager.Instance.SaveGame();
             CloseMenu();
@@ -403,7 +389,7 @@ public class SettingsPopup : MonoBehaviour
 
         GUILayout.BeginHorizontal();
         GUI.backgroundColor = new Color(1f, 0.65f, 0.65f);
-        if (GUILayout.Button("🔄 Xóa Save & Chơi Lại", UIThemeManager.ButtonStyle, GUILayout.Height(30)))
+        if (GUILayout.Button("Xóa Save & Chơi Lại", UIThemeManager.ButtonStyle, GUILayout.Height(30)))
         {
             if (SaveManager.Instance != null) SaveManager.Instance.ResetSaveData();
             Time.timeScale = 1f;
@@ -411,7 +397,7 @@ public class SettingsPopup : MonoBehaviour
         }
 
         GUI.backgroundColor = new Color(0.95f, 0.45f, 0.45f);
-        if (GUILayout.Button("🚪 Thoát Game (Quit)", UIThemeManager.ButtonStyle, GUILayout.Height(30)))
+        if (GUILayout.Button("Thoát Game (Quit)", UIThemeManager.ButtonStyle, GUILayout.Height(30)))
         {
             if (SaveManager.Instance != null) SaveManager.Instance.SaveGame();
             Application.Quit();
@@ -428,7 +414,7 @@ public class SettingsPopup : MonoBehaviour
 
         // Nút Tiếp tục chơi (To rõ ở góc dưới)
         GUI.backgroundColor = new Color(0.35f, 0.95f, 0.40f);
-        if (GUILayout.Button("<size=15><b>▶️ TIẾP TỤC CHƠI (ESC)</b></size>", UIThemeManager.ButtonStyle, GUILayout.Height(40)))
+        if (GUILayout.Button("<size=15><b>TIẾP TỤC CHƠI (ESC)</b></size>", UIThemeManager.ButtonStyle, GUILayout.Height(40)))
         {
             CloseMenu();
         }
@@ -441,7 +427,7 @@ public class SettingsPopup : MonoBehaviour
         GUILayout.BeginVertical(UIThemeManager.InteriorBoxStyle);
         tutorialScrollPos = GUILayout.BeginScrollView(tutorialScrollPos, GUILayout.Height(330));
 
-        GUILayout.Label("<size=15><b>🎮 1. PHÍM ĐIỀU KHIỂN (CONTROLS)</b></size>", UIThemeManager.SubHeaderStyle);
+        GUILayout.Label("<size=15><b>1. PHÍM ĐIỀU KHIỂN (CONTROLS)</b></size>", UIThemeManager.SubHeaderStyle);
         GUILayout.Label("• <b>[W, A, S, D]</b> hoặc <b>[Phím Mũi Tên]</b>: Di chuyển nhân vật.", UIThemeManager.LabelStyle);
         GUILayout.Label("• <b>[Phím F]</b> (hoặc giữ F): Tương tác nhặt hàng / Rút tiền từ Két / Bán hàng.", UIThemeManager.LabelStyle);
         GUILayout.Label("• <b>[Phím Tab]</b>: Mở Tablet Quản Lý Nhà Máy (nâng cấp máy & thuê NPC từ xa).", UIThemeManager.LabelStyle);
@@ -449,7 +435,7 @@ public class SettingsPopup : MonoBehaviour
         GUILayout.Label("• <b>[Phím H]</b>: Mở nhanh trang Hướng Dẫn Chơi này.", UIThemeManager.LabelStyle);
 
         GUILayout.Space(12);
-        GUILayout.Label("<size=15><b>🏭 2. VÒNG LẶP KIẾM TIỀN & PHÁT TRIỂN (5 BƯỚC)</b></size>", UIThemeManager.SubHeaderStyle);
+        GUILayout.Label("<size=15><b>2. VÒNG LẶP KIẾM TIỀN & PHÁT TRIỂN (5 BƯỚC)</b></size>", UIThemeManager.SubHeaderStyle);
         GUILayout.Label("<b>Bước 1 - Thu Hoạch:</b> Lại gần bệ chứa pallet của máy sản xuất (Gỗ, Đá...) bấm <b>[F]</b> để bốc hàng lên đỉnh đầu (tối đa 5 món/lượt).", UIThemeManager.LabelStyle);
         GUILayout.Label("<b>Bước 2 - Bán Hàng:</b> Chạy ra vùng <b>Khu Bán Hàng (SellZone)</b> màu xanh lá phía trước xưởng gỗ. Hàng sẽ tự động được dỡ xuống và bán ra tiền.", UIThemeManager.LabelStyle);
         GUILayout.Label("<b>Bước 3 - Rút Tiền Két:</b> Tiền thu được sẽ cất an toàn vào <b>Két Sắt (Vault)</b> bên hông xưởng. Hãy lại gần Két sắt bấm <b>[F]</b> để rút tiền về ví cá nhân!", UIThemeManager.LabelStyle);
@@ -457,7 +443,7 @@ public class SettingsPopup : MonoBehaviour
         GUILayout.Label("<b>Bước 5 - Tự Động Hóa (Thuê NPC):</b> Thuê <b>Công Nhân NPC</b> tại từng dây chuyền để họ tự động khuân vác hàng ra bãi bán thay cho bạn!", UIThemeManager.LabelStyle);
 
         GUILayout.Space(12);
-        GUILayout.Label("<size=15><b>🏆 3. MỤC TIÊU CHIẾN THẮNG TRÒ CHƠI</b></size>", UIThemeManager.SubHeaderStyle);
+        GUILayout.Label("<size=15><b>3. MỤC TIÊU CHIẾN THẮNG TRÒ CHƠI</b></size>", UIThemeManager.SubHeaderStyle);
         GUILayout.Label("Để phá đảo trò chơi, bạn cần hoàn thành 2 điều kiện:", UIThemeManager.LabelStyle);
         GUILayout.Label("• Tích lũy đủ <b>$200,000</b> trong ví cá nhân.", UIThemeManager.LabelStyle);
         GUILayout.Label("• Nâng cấp toàn bộ <b>6 Dây Chuyền Sản Xuất lên Tier 3</b>!", UIThemeManager.LabelStyle);

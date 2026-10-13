@@ -108,18 +108,16 @@ public class InputManager : MonoBehaviour
                 OnMenuTogglePressed?.Invoke();
             }
 
-            // Phím mở Cài đặt (Esc) - đóng menu đang mở trước, nếu không có menu nào mới mở Cài đặt
+            // Phím mở Cài đặt (Esc)
             if (keyboard.escapeKey.wasPressedThisFrame)
             {
-                if (FactoryManagementUI.Instance != null && FactoryManagementUI.Instance.IsOpen)
-                {
-                    FactoryManagementUI.Instance.CloseMenu();
-                }
-                else
-                {
-                    GameEvents.OnSettingsTogglePressed?.Invoke();
-                    OnSettingsTogglePressed?.Invoke();
-                }
+                HandleEscapeKey();
+            }
+
+            // Phím mở nhanh Hướng dẫn chơi (H)
+            if (keyboard.hKey.wasPressedThisFrame)
+            {
+                HandleHelpKey();
             }
         }
 
@@ -153,15 +151,7 @@ public class InputManager : MonoBehaviour
 
             if (gamepad.startButton.wasPressedThisFrame)
             {
-                if (FactoryManagementUI.Instance != null && FactoryManagementUI.Instance.IsOpen)
-                {
-                    FactoryManagementUI.Instance.CloseMenu();
-                }
-                else
-                {
-                    GameEvents.OnSettingsTogglePressed?.Invoke();
-                    OnSettingsTogglePressed?.Invoke();
-                }
+                HandleEscapeKey();
             }
         }
 #else
@@ -190,15 +180,12 @@ public class InputManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (FactoryManagementUI.Instance != null && FactoryManagementUI.Instance.IsOpen)
-            {
-                FactoryManagementUI.Instance.CloseMenu();
-            }
-            else
-            {
-                GameEvents.OnSettingsTogglePressed?.Invoke();
-                OnSettingsTogglePressed?.Invoke();
-            }
+            HandleEscapeKey();
+        }
+
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            HandleHelpKey();
         }
 #endif
 
@@ -224,5 +211,61 @@ public class InputManager : MonoBehaviour
     {
         if (!IsMovementEnabled) return;
         MovementInput = joystickDirection.sqrMagnitude > 1f ? joystickDirection.normalized : joystickDirection;
+    }
+
+    private void HandleEscapeKey()
+    {
+        if (MainMenuUI.Instance != null && MainMenuUI.Instance.IsOpen) return;
+
+        if (StoryIntroLetter.Instance != null && StoryIntroLetter.Instance.IsOpen)
+        {
+            StoryIntroLetter.Instance.CloseLetter();
+            return;
+        }
+
+        if (FactoryManagementUI.Instance != null && FactoryManagementUI.Instance.IsOpen)
+        {
+            FactoryManagementUI.Instance.CloseMenu();
+            return;
+        }
+
+        if (SettingsPopup.Instance != null && SettingsPopup.Instance.IsOpen)
+        {
+            SettingsPopup.Instance.CloseMenu();
+            return;
+        }
+
+        if (SettingsPopup.Instance != null)
+        {
+            SettingsPopup.Instance.OpenSettings();
+        }
+        else
+        {
+            GameEvents.OnSettingsTogglePressed?.Invoke();
+            OnSettingsTogglePressed?.Invoke();
+        }
+    }
+
+    private void HandleHelpKey()
+    {
+        if (MainMenuUI.Instance != null && MainMenuUI.Instance.IsOpen) return;
+        if (StoryIntroLetter.Instance != null && StoryIntroLetter.Instance.IsOpen) return;
+
+        if (FactoryManagementUI.Instance != null && FactoryManagementUI.Instance.IsOpen)
+        {
+            FactoryManagementUI.Instance.CloseMenu();
+        }
+
+        if (SettingsPopup.Instance != null)
+        {
+            if (SettingsPopup.Instance.IsOpen && SettingsPopup.Instance.CurrentTab == SettingsPopup.MenuTab.Tutorial)
+            {
+                SettingsPopup.Instance.CloseMenu();
+            }
+            else
+            {
+                SettingsPopup.Instance.OpenTutorial();
+            }
+        }
     }
 }

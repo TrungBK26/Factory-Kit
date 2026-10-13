@@ -252,8 +252,8 @@ public class FactoryManagementUI : MonoBehaviour
         // 3. Header: Tiêu đề, Ví tiền và Nút đóng
         GUILayout.BeginHorizontal();
         GUILayout.BeginVertical();
-        GUILayout.Label("<size=19><color=#FFEAA7><b>🏛️ TRUNG TÂM QUẢN LÝ & NÂNG CẤP NHÀ MÁY</b></color></size>", UIThemeManager.HeaderStyle);
-        GUILayout.Label("<size=12><color=#DDD0C0><i>⚡ Nâng cấp cỗ máy • Tăng tốc độ • Mở rộng kho • Thuê NPC vận chuyển tự động</i></color></size>", UIThemeManager.LabelStyle);
+        GUILayout.Label("<size=19><color=#FFEAA7><b>TRUNG TÂM QUẢN LÝ & NÂNG CẤP NHÀ MÁY</b></color></size>", UIThemeManager.HeaderStyle);
+        GUILayout.Label("<size=12><color=#DDD0C0><i>• Nâng cấp cỗ máy • Tăng tốc độ • Mở rộng kho • Thuê NPC vận chuyển tự động</i></color></size>", UIThemeManager.LabelStyle);
         GUILayout.EndVertical();
 
         GUILayout.FlexibleSpace();
@@ -262,7 +262,7 @@ public class FactoryManagementUI : MonoBehaviour
         int wallet = EconomyManager.Instance != null ? EconomyManager.Instance.CurrentWallet : 0;
         GUILayout.BeginVertical();
         GUILayout.BeginHorizontal();
-        GUILayout.Box($"<size=15><color=#FFD700><b>💰 ${wallet:N0}</b></color></size>", UIThemeManager.MoneyBadgeStyle, GUILayout.Height(34));
+        GUILayout.Box($"<size=15><color=#FFD700><b>$ {wallet:N0}</b></color></size>", UIThemeManager.MoneyBadgeStyle, GUILayout.Height(34));
         GUILayout.Space(8);
         GUI.backgroundColor = new Color(0.95f, 0.40f, 0.35f);
         if (GUILayout.Button("✕ Đóng (Esc)", UIThemeManager.ButtonRoundedStyle, GUILayout.Width(125), GUILayout.Height(34)))
@@ -298,11 +298,11 @@ public class FactoryManagementUI : MonoBehaviour
         }
 
         GUILayout.BeginHorizontal();
-        if (DrawFilterTab($"📋 Tất Cả ({totalCount})", selectedTab == 0, 150)) selectedTab = 0;
+        if (DrawFilterTab($"Tất Cả ({totalCount})", selectedTab == 0, 150)) selectedTab = 0;
         GUILayout.Space(6);
-        if (DrawFilterTab($"⚡ Đang Hoạt Động ({activeCount})", selectedTab == 1, 190)) selectedTab = 1;
+        if (DrawFilterTab($"Đang Hoạt Động ({activeCount})", selectedTab == 1, 190)) selectedTab = 1;
         GUILayout.Space(6);
-        if (DrawFilterTab($"🔒 Chưa Mở Khóa ({lockedCount})", selectedTab == 2, 180)) selectedTab = 2;
+        if (DrawFilterTab($"Chưa Mở Khóa ({lockedCount})", selectedTab == 2, 180)) selectedTab = 2;
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
 
@@ -356,24 +356,24 @@ public class FactoryManagementUI : MonoBehaviour
     private void DrawMachineCardGUI(MachineSlot slot, ProductionLine line, int currentWallet, float cardWidth)
     {
         bool unlocked = slot.isUnlocked;
-        string emoji = GetResourceEmoji(slot.machineConfig.resourceType);
+        string resTag = GetResourceTag(slot.machineConfig.resourceType);
         string mName = slot.machineConfig != null ? slot.machineConfig.machineName : slot.slotName;
 
         GUILayout.BeginVertical(UIThemeManager.MachineCardStyle, GUILayout.Width(cardWidth));
 
         // 1. HÀNG TIÊU ĐỀ THẺ MÁY
         GUILayout.BeginHorizontal();
-        GUILayout.Label($"<size=16><b>{emoji} {mName.ToUpper()}</b></size>", UIThemeManager.SubHeaderStyle, GUILayout.Width(280));
+        GUILayout.Label($"<size=16><b>{resTag} {mName.ToUpper()}</b></size>", UIThemeManager.SubHeaderStyle, GUILayout.Width(280));
 
         if (unlocked)
         {
             GUILayout.Box("<size=12><color=#52C41A><b>● ĐANG HOẠT ĐỘNG</b></color></size>", UIThemeManager.MiniBadgeStyle, GUILayout.Height(24));
             GUILayout.FlexibleSpace();
-            GUILayout.Box($"<size=12><color=#FFD700><b>⭐ CẤP TIER: {slot.currentTier}/3</b></color></size>", UIThemeManager.MiniBadgeStyle, GUILayout.Height(24));
+            GUILayout.Box($"<size=12><color=#FFD700><b>CẤP TIER: {slot.currentTier}/3</b></color></size>", UIThemeManager.MiniBadgeStyle, GUILayout.Height(24));
         }
         else
         {
-            GUILayout.Box("<size=12><color=#FFA940><b>🔒 CHƯA MỞ KHÓA</b></color></size>", UIThemeManager.MiniBadgeStyle, GUILayout.Height(24));
+            GUILayout.Box("<size=12><color=#FFA940><b>CHƯA MỞ KHÓA</b></color></size>", UIThemeManager.MiniBadgeStyle, GUILayout.Height(24));
             GUILayout.FlexibleSpace();
         }
         GUILayout.EndHorizontal();
@@ -398,8 +398,8 @@ public class FactoryManagementUI : MonoBehaviour
             GUI.enabled = canAfford;
 
             string btnText = canAfford 
-                ? (unlockCost > 0 ? $"🔓 MỞ KHÓA (${unlockCost:N0})" : "🔓 MỞ KHÓA MIỄN PHÍ")
-                : $"🔒 Thiếu ${(unlockCost - currentWallet):N0}";
+                ? (unlockCost > 0 ? $"MỞ KHÓA (${unlockCost:N0})" : "MỞ KHÓA MIỄN PHÍ")
+                : $"Thiếu ${(unlockCost - currentWallet):N0}";
 
             if (GUILayout.Button(btnText, UIThemeManager.ButtonRoundedStyle, GUILayout.Width(220), GUILayout.Height(40)))
             {
@@ -427,31 +427,31 @@ public class FactoryManagementUI : MonoBehaviour
         // Băng thông số vận hành cao cấp, tương phản cao, bo góc hoàn hảo
         GUILayout.BeginHorizontal(UIThemeManager.StatsBarStyle, GUILayout.Height(34));
         GUILayout.Space(8);
-        GUILayout.Label($"⏱️ <color=#DDD0C0>Tốc độ ra hàng:</color> <color=#FFD166><b>{curInterval:F1}s / sản phẩm</b></color>", UIThemeManager.LabelStyle);
+        GUILayout.Label($"<color=#DDD0C0>Tốc độ ra hàng:</color> <color=#FFD166><b>{curInterval:F1}s / sản phẩm</b></color>", UIThemeManager.LabelStyle);
         GUILayout.FlexibleSpace();
         GUILayout.Label("<color=#5A5042><b>│</b></color>", UIThemeManager.LabelStyle);
         GUILayout.FlexibleSpace();
-        GUILayout.Label($"📦 <color=#DDD0C0>Sức chứa kho:</color> <color=#06D6A0><b>{curCap} kiện</b></color>", UIThemeManager.LabelStyle);
+        GUILayout.Label($"<color=#DDD0C0>Sức chứa kho:</color> <color=#06D6A0><b>{curCap} kiện</b></color>", UIThemeManager.LabelStyle);
         GUILayout.FlexibleSpace();
         GUILayout.Label("<color=#5A5042><b>│</b></color>", UIThemeManager.LabelStyle);
         GUILayout.FlexibleSpace();
-        GUILayout.Label($"👷 <color=#DDD0C0>Công nhân:</color> <color=#48CAE4><b>{workerCount}/{maxWorkers} NPC</b></color>", UIThemeManager.LabelStyle);
+        GUILayout.Label($"<color=#DDD0C0>Công nhân:</color> <color=#48CAE4><b>{workerCount}/{maxWorkers} NPC</b></color>", UIThemeManager.LabelStyle);
         GUILayout.Space(8);
         GUILayout.EndHorizontal();
 
         GUILayout.Space(6);
 
-        // 4. HÀNG 4 NÚT HÀNH ĐỘNG NÂNG CẤP CHUYÊN BIỆT MÀU SẮC (Bo góc 4 cạnh, màu sắc tươi sáng)
+        // 4. HÀNG 4 NÚT HÀNH ĐỘNG NÂNG CẤP CHUYÊN BIỆT MÀU SẮC
         float btnWidth = (cardWidth - 48f) / 4f;
         GUILayout.BeginHorizontal();
 
-        // NÚT 1: ⭐ NÂNG CẤP TIER (Màu Vàng Đồng)
+        // NÚT 1: NÂNG CẤP TIER (Màu Vàng Đồng)
         int tierCost = slot.machineConfig.GetTierCost(tier + 1);
         bool canTier = tier < 3 && tierCost != -1;
         bool affTier = canTier && currentWallet >= tierCost;
         GUI.backgroundColor = canTier ? (affTier ? new Color(0.98f, 0.65f, 0.15f) : new Color(0.58f, 0.50f, 0.40f)) : new Color(0.40f, 0.38f, 0.36f);
         GUI.enabled = affTier;
-        string tierTxt = canTier ? $"⭐ Lên Tier {tier + 1}\n(${tierCost:N0})" : "⭐ Tối Đa\n(Tier 3)";
+        string tierTxt = canTier ? $"Lên Tier {tier + 1}\n(${tierCost:N0})" : "Tối Đa\n(Tier 3)";
         if (GUILayout.Button(tierTxt, UIThemeManager.ButtonRoundedStyle, GUILayout.Width(btnWidth), GUILayout.Height(46)))
         {
             if (EconomyManager.Instance != null && EconomyManager.Instance.TrySpendMoney(tierCost))
@@ -464,13 +464,13 @@ public class FactoryManagementUI : MonoBehaviour
 
         GUILayout.Space(4);
 
-        // NÚT 2: ⚡ TĂNG TỐC ĐỘ (Màu Xanh Biển)
+        // NÚT 2: TĂNG TỐC ĐỘ (Màu Xanh Biển)
         int speedCost = slot.machineConfig.GetSpeedCost(slot.currentSpeedLevel);
         bool canSpeed = speedCost != -1 && (slot.machineConfig.spawnIntervalLevels == null || slot.currentSpeedLevel < slot.machineConfig.spawnIntervalLevels.Length - 1);
         bool affSpeed = canSpeed && currentWallet >= speedCost;
         GUI.backgroundColor = canSpeed ? (affSpeed ? new Color(0.20f, 0.65f, 0.95f) : new Color(0.42f, 0.52f, 0.58f)) : new Color(0.40f, 0.38f, 0.36f);
         GUI.enabled = affSpeed;
-        string spdTxt = canSpeed ? $"⚡ Tăng Tốc {slot.currentSpeedLevel + 2}\n(${speedCost:N0})" : "⚡ Tối Đa\n(Cực Nhanh)";
+        string spdTxt = canSpeed ? $"Tăng Tốc Cấp {slot.currentSpeedLevel + 2}\n(${speedCost:N0})" : "Tối Đa\n(Tốc Độ)";
         if (GUILayout.Button(spdTxt, UIThemeManager.ButtonRoundedStyle, GUILayout.Width(btnWidth), GUILayout.Height(46)))
         {
             if (EconomyManager.Instance != null && EconomyManager.Instance.TrySpendMoney(speedCost))
@@ -482,13 +482,13 @@ public class FactoryManagementUI : MonoBehaviour
 
         GUILayout.Space(4);
 
-        // NÚT 3: 📦 MỞ RỘNG KHO (Màu Tím Mộng Mơ)
+        // NÚT 3: MỞ RỘNG KHO (Màu Tím Mộng Mơ)
         int storageCost = slot.machineConfig.GetStorageCost(slot.currentStorageLevel);
         bool canStorage = storageCost != -1 && (slot.machineConfig.storageCapacityLevels == null || slot.currentStorageLevel < slot.machineConfig.storageCapacityLevels.Length - 1);
         bool affStorage = canStorage && currentWallet >= storageCost;
         GUI.backgroundColor = canStorage ? (affStorage ? new Color(0.78f, 0.40f, 0.88f) : new Color(0.52f, 0.42f, 0.55f)) : new Color(0.40f, 0.38f, 0.36f);
         GUI.enabled = affStorage;
-        string storTxt = canStorage ? $"📦 Kho Cấp {slot.currentStorageLevel + 2}\n(${storageCost:N0})" : "📦 Kho Đầy Đủ\n(Tối Đa)";
+        string storTxt = canStorage ? $"Kho Cấp {slot.currentStorageLevel + 2}\n(${storageCost:N0})" : "Tối Đa\n(Sức Chứa)";
         if (GUILayout.Button(storTxt, UIThemeManager.ButtonRoundedStyle, GUILayout.Width(btnWidth), GUILayout.Height(46)))
         {
             if (EconomyManager.Instance != null && EconomyManager.Instance.TrySpendMoney(storageCost))
@@ -504,13 +504,13 @@ public class FactoryManagementUI : MonoBehaviour
 
         GUILayout.Space(4);
 
-        // NÚT 4: 👷 THUÊ CÔNG NHÂN NPC (Màu Xanh Lá Mạ)
+        // NÚT 4: THUÊ CÔNG NHÂN NPC (Màu Xanh Lá Mạ)
         int workerCost = slot.machineConfig.GetWorkerCost(workerCount);
         bool canWorker = workerCount < maxWorkers && workerCost != -1;
         bool affWorker = canWorker && currentWallet >= workerCost;
         GUI.backgroundColor = canWorker ? (affWorker ? new Color(0.28f, 0.78f, 0.35f) : new Color(0.42f, 0.55f, 0.45f)) : new Color(0.40f, 0.38f, 0.36f);
         GUI.enabled = affWorker;
-        string wrkTxt = canWorker ? $"👷 Thuê NPC ({workerCount + 1})\n(${workerCost:N0})" : $"👷 Đủ NPC\n({maxWorkers}/{maxWorkers})";
+        string wrkTxt = canWorker ? $"Thuê NPC ({workerCount + 1})\n(${workerCost:N0})" : $"Đủ NPC\n({maxWorkers}/{maxWorkers})";
         if (GUILayout.Button(wrkTxt, UIThemeManager.ButtonRoundedStyle, GUILayout.Width(btnWidth), GUILayout.Height(46)))
         {
             if (EconomyManager.Instance != null && EconomyManager.Instance.TrySpendMoney(workerCost))
@@ -526,14 +526,14 @@ public class FactoryManagementUI : MonoBehaviour
         GUILayout.EndVertical();
     }
 
-    private static string GetResourceEmoji(ResourceType type) => type switch
+    private static string GetResourceTag(ResourceType type) => type switch
     {
-        ResourceType.Wood => "🌲",
-        ResourceType.Stone => "⛏️",
-        ResourceType.Copper => "🥉",
-        ResourceType.Iron => "🔩",
-        ResourceType.Silver => "🥈",
-        ResourceType.Gold => "🥇",
-        _ => "⚙️"
+        ResourceType.Wood => "[GỖ]",
+        ResourceType.Stone => "[ĐÁ]",
+        ResourceType.Copper => "[ĐỒNG]",
+        ResourceType.Iron => "[SẮT]",
+        ResourceType.Silver => "[BẠC]",
+        ResourceType.Gold => "[VÀNG]",
+        _ => "[MÁY]"
     };
 }

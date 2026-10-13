@@ -262,7 +262,7 @@ public class MainMenuUI : MonoBehaviour
         HandlePlankButton(rectPlank1, mousePos, () =>
         {
             PlayClickSound();
-            if (PlayerPrefs.HasKey("FACTORY_KIT_SAVE_DATA"))
+            if (SaveManager.Instance != null && SaveManager.Instance.HasSaveData)
             {
                 showNewGameConfirm = true;
             }
@@ -276,8 +276,9 @@ public class MainMenuUI : MonoBehaviour
         HandlePlankButton(rectPlank2, mousePos, () =>
         {
             PlayClickSound();
-            if (PlayerPrefs.HasKey("FACTORY_KIT_SAVE_DATA"))
+            if (SaveManager.Instance != null && SaveManager.Instance.HasSaveData)
             {
+                SaveManager.Instance.LoadGame();
                 CloseMenu();
             }
             else
@@ -387,7 +388,7 @@ public class MainMenuUI : MonoBehaviour
 
         GUILayout.BeginArea(new Rect(modalX + 22, modalY + 18, modalW - 44, modalH - 36));
 
-        GUILayout.Label("🏭 <b>FACTORY KIT - THÔNG TIN DỰ ÁN</b>", UIThemeManager.HeaderStyle);
+        GUILayout.Label("<b>FACTORY KIT - THÔNG TIN DỰ ÁN</b>", UIThemeManager.HeaderStyle);
         GUILayout.Space(12);
 
         GUILayout.BeginVertical(UIThemeManager.InteriorBoxStyle);
@@ -425,7 +426,7 @@ public class MainMenuUI : MonoBehaviour
 
         GUILayout.BeginArea(new Rect(modalX + 22, modalY + 18, modalW - 44, modalH - 36));
 
-        GUILayout.Label("⚠️ <b>BẮT ĐẦU CHƠI MỚI?</b>", UIThemeManager.HeaderStyle);
+        GUILayout.Label("<b>BẮT ĐẦU CHƠI MỚI?</b>", UIThemeManager.HeaderStyle);
         GUILayout.Space(8);
 
         GUILayout.BeginVertical(UIThemeManager.InteriorBoxStyle);
@@ -436,7 +437,7 @@ public class MainMenuUI : MonoBehaviour
 
         GUILayout.BeginHorizontal();
         GUI.backgroundColor = new Color(1f, 0.45f, 0.45f);
-        if (GUILayout.Button("🔄 Đồng Ý Chơi Mới", UIThemeManager.ButtonStyle, GUILayout.Height(34)))
+        if (GUILayout.Button("Đồng Ý Chơi Mới", UIThemeManager.ButtonStyle, GUILayout.Height(34)))
         {
             PlayClickSound();
             showNewGameConfirm = false;

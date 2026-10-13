@@ -107,15 +107,15 @@ public class PrototypeTestHUD : MonoBehaviour
         }
     }
 
-    private string GetResourceIcon(ResourceType type) => type switch
+    private string GetResourceTag(ResourceType type) => type switch
     {
-        ResourceType.Wood => "🌲",
-        ResourceType.Stone => "⛏️",
-        ResourceType.Copper => "🥉",
-        ResourceType.Iron => "🔩",
-        ResourceType.Silver => "🥈",
-        ResourceType.Gold => "🥇",
-        _ => "⚙️"
+        ResourceType.Wood => "[GỖ] ",
+        ResourceType.Stone => "[ĐÁ] ",
+        ResourceType.Copper => "[ĐỒNG] ",
+        ResourceType.Iron => "[SẮT] ",
+        ResourceType.Silver => "[BẠC] ",
+        ResourceType.Gold => "[VÀNG] ",
+        _ => ""
     };
 
     private void OnGUI()
@@ -154,7 +154,7 @@ public class PrototypeTestHUD : MonoBehaviour
             GUILayout.BeginArea(new Rect(25, 20, statusWidth - 20, statusHeight - 15));
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("<size=14><b>🏭 FACTORY REBORN</b></size>", UIThemeManager.SubHeaderStyle);
+            GUILayout.Label("<size=14><b>FACTORY REBORN</b></size>", UIThemeManager.SubHeaderStyle);
             if (GUILayout.Button("F1: Ẩn", UIThemeManager.ButtonSmallStyle, GUILayout.Width(65), GUILayout.Height(22)))
             {
                 ToggleStatusPanel();
@@ -164,15 +164,15 @@ public class PrototypeTestHUD : MonoBehaviour
             GUILayout.Space(2);
 
             int wallet = EconomyManager.Instance != null ? EconomyManager.Instance.CurrentWallet : 0;
-            GUILayout.Label($"💰 Số dư ví: <b>${wallet:N0}</b>", UIThemeManager.LabelStyle);
+            GUILayout.Label($"Số dư ví: <b>${wallet:N0}</b>", UIThemeManager.LabelStyle);
 
             var vault = FindAnyObjectByType<MoneyVault>();
             int vaultMoney = vault != null ? vault.AccumulatedMoney : 0;
-            GUILayout.Label($"🏦 Tiền trong Két tạm: <b>${vaultMoney:N0}</b>", UIThemeManager.LabelStyle);
+            GUILayout.Label($"Tiền trong Két: <b>${vaultMoney:N0}</b>", UIThemeManager.LabelStyle);
 
             int carryCount = playerCarry != null ? playerCarry.CurrentCount : 0;
             int maxCapacity = playerCarry != null ? playerCarry.MaxCapacity : 5;
-            GUILayout.Label($"📦 Hàng trên đầu: <b>{carryCount} / {maxCapacity}</b>", UIThemeManager.LabelStyle);
+            GUILayout.Label($"Hàng trên đầu: <b>{carryCount} / {maxCapacity}</b>", UIThemeManager.LabelStyle);
 
             GUILayout.Space(4);
             GUILayout.Label("<b>--- 6 DÂY CHUYỀN SẢN XUẤT ---</b>", UIThemeManager.SubHeaderStyle);
@@ -185,19 +185,19 @@ public class PrototypeTestHUD : MonoBehaviour
                     foreach (var slot in line.MachineSlots)
                     {
                         if (slot == null) continue;
-                        string resIcon = slot.machineConfig != null ? GetResourceIcon(slot.machineConfig.resourceType) : "⚙️";
+                        string resTag = slot.machineConfig != null ? GetResourceTag(slot.machineConfig.resourceType) : "";
                         string name = slot.machineConfig != null ? slot.machineConfig.machineName : slot.slotName;
 
                         if (slot.isUnlocked)
                         {
                             int t = slot.spawnedMachineInstance != null ? slot.spawnedMachineInstance.CurrentTier : slot.currentTier;
                             float spd = slot.spawnedMachineInstance != null ? slot.spawnedMachineInstance.GetCurrentSpawnInterval() : 2.5f;
-                            GUILayout.Label($"{resIcon} {name}: <b>Tier {t}/3</b> | {spd:F1}s | {line.WorkerCount} NPC", UIThemeManager.LabelStyle);
+                            GUILayout.Label($"{resTag}{name}: <b>Tier {t}/3</b> | {spd:F1}s | {line.WorkerCount} NPC", UIThemeManager.LabelStyle);
                         }
                         else
                         {
                             int cost = slot.machineConfig != null ? slot.machineConfig.unlockCost : 0;
-                            GUILayout.Label($"<color=#aa9988>{resIcon} {name}: 🔒 Chưa mở (${cost:N0})</color>", UIThemeManager.LabelStyle);
+                            GUILayout.Label($"<color=#aa9988>{resTag}{name}: Chưa mở (${cost:N0})</color>", UIThemeManager.LabelStyle);
                         }
                     }
                 }
@@ -207,7 +207,7 @@ public class PrototypeTestHUD : MonoBehaviour
             if (playerInteraction != null && playerInteraction.HasInteractableTarget)
             {
                 GUI.color = Color.green;
-                GUILayout.Label($"👉 <b>{playerInteraction.CurrentPrompt}</b>", UIThemeManager.LabelStyle);
+                GUILayout.Label($"► <b>{playerInteraction.CurrentPrompt}</b>", UIThemeManager.LabelStyle);
                 GUI.color = Color.white;
             }
 
@@ -223,7 +223,7 @@ public class PrototypeTestHUD : MonoBehaviour
             GUILayout.BeginArea(new Rect(Screen.width - panelWidth - 5, 22, panelWidth - 20, panelHeight - 15));
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("<size=13><b>🛠️ DEV CHEAT MENU</b></size>", UIThemeManager.SubHeaderStyle);
+            GUILayout.Label("<size=13><b>DEV CHEAT MENU</b></size>", UIThemeManager.SubHeaderStyle);
             if (GUILayout.Button("✕ Ẩn (F12)", UIThemeManager.ButtonSmallStyle, GUILayout.Width(75), GUILayout.Height(22)))
             {
                 ToggleCheatPanel();
@@ -235,11 +235,11 @@ public class PrototypeTestHUD : MonoBehaviour
             // 1. Thêm tiền
             GUILayout.BeginHorizontal();
             GUI.backgroundColor = new Color(0.6f, 1f, 0.6f);
-            if (GUILayout.Button("💵 +$1,000", GUILayout.Height(26)))
+            if (GUILayout.Button("+$1,000", GUILayout.Height(26)))
             {
                 if (EconomyManager.Instance != null) EconomyManager.Instance.AddMoney(1000);
             }
-            if (GUILayout.Button("💰 +$10,000", GUILayout.Height(26)))
+            if (GUILayout.Button("+$10,000", GUILayout.Height(26)))
             {
                 if (EconomyManager.Instance != null) EconomyManager.Instance.AddMoney(10000);
             }
@@ -247,7 +247,7 @@ public class PrototypeTestHUD : MonoBehaviour
 
             // 2. Mở khóa tất cả máy
             GUI.backgroundColor = new Color(0.4f, 0.85f, 1f);
-            if (GUILayout.Button("🔓 Mở Khóa Tất Cả 6 Máy", GUILayout.Height(26)))
+            if (GUILayout.Button("Mở Khóa Tất Cả 6 Máy", GUILayout.Height(26)))
             {
                 if (FactoryManager.Instance != null)
                 {
@@ -264,7 +264,7 @@ public class PrototypeTestHUD : MonoBehaviour
 
             // 3. Nâng tất cả máy lên Tier 3
             GUI.backgroundColor = new Color(1f, 0.9f, 0.4f);
-            if (GUILayout.Button("⬆️ Nâng Tất Cả Máy Lên Tier 3", GUILayout.Height(26)))
+            if (GUILayout.Button("Nâng Tất Cả Máy Lên Tier 3", GUILayout.Height(26)))
             {
                 if (FactoryManager.Instance != null)
                 {
@@ -289,12 +289,12 @@ public class PrototypeTestHUD : MonoBehaviour
             // 4. Thuê công nhân
             GUI.backgroundColor = new Color(0.5f, 0.8f, 1f);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("👷 Thuê 1 NPC", GUILayout.Height(26)))
+            if (GUILayout.Button("Thuê 1 NPC", GUILayout.Height(26)))
             {
                 var line = FindAnyObjectByType<ProductionLine>();
                 if (line != null) line.HireWorker();
             }
-            if (GUILayout.Button("👥 Full NPC (Tất Cả)", GUILayout.Height(26)))
+            if (GUILayout.Button("Full NPC (Tất Cả)", GUILayout.Height(26)))
             {
                 if (FactoryManager.Instance != null)
                 {
@@ -312,7 +312,7 @@ public class PrototypeTestHUD : MonoBehaviour
 
             // 5. Mở Menu Quản Lý Tablet UI
             GUI.backgroundColor = new Color(0.85f, 0.7f, 1f);
-            if (GUILayout.Button("📱 Bật Menu Quản Lý (Phím Tab)", GUILayout.Height(26)))
+            if (GUILayout.Button("Bật Menu Quản Lý (Phím Tab)", GUILayout.Height(26)))
             {
                 FactoryManagementUI.Instance.ToggleMenu();
             }
@@ -320,11 +320,11 @@ public class PrototypeTestHUD : MonoBehaviour
             // 6. Lưu và Tải Game
             GUILayout.BeginHorizontal();
             GUI.backgroundColor = new Color(0.9f, 0.9f, 0.9f);
-            if (GUILayout.Button("💾 Lưu Game", GUILayout.Height(26)))
+            if (GUILayout.Button("Lưu Game", GUILayout.Height(26)))
             {
                 if (SaveManager.Instance != null) SaveManager.Instance.SaveGame();
             }
-            if (GUILayout.Button("📂 Nạp Lại", GUILayout.Height(26)))
+            if (GUILayout.Button("Nạp Lại", GUILayout.Height(26)))
             {
                 if (SaveManager.Instance != null) SaveManager.Instance.LoadGame();
             }
@@ -335,7 +335,7 @@ public class PrototypeTestHUD : MonoBehaviour
             {
                 bool autoOn = SaveManager.Instance.AutoSaveEnabled;
                 GUI.backgroundColor = autoOn ? new Color(0.6f, 1f, 0.6f) : new Color(1f, 0.7f, 0.7f);
-                if (GUILayout.Button(autoOn ? "⏱️ Auto-Save (30s): BẬT" : "⏱️ Auto-Save: TẮT (Lưu Tay)", GUILayout.Height(22)))
+                if (GUILayout.Button(autoOn ? "Auto-Save (30s): BẬT" : "Auto-Save: TẮT (Lưu Tay)", GUILayout.Height(22)))
                 {
                     SaveManager.Instance.AutoSaveEnabled = !autoOn;
                 }
@@ -343,7 +343,7 @@ public class PrototypeTestHUD : MonoBehaviour
 
             // 7. Xóa dữ liệu lưu
             GUI.backgroundColor = new Color(1f, 0.6f, 0.6f);
-            if (GUILayout.Button("🔄 Xóa Save & Reset về $0", GUILayout.Height(26)))
+            if (GUILayout.Button("Xóa Save & Reset về $0", GUILayout.Height(26)))
             {
                 if (SaveManager.Instance != null) SaveManager.Instance.ResetSaveData();
                 UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
@@ -351,7 +351,7 @@ public class PrototypeTestHUD : MonoBehaviour
 
             // 8. Kích hoạt Chiến Thắng Game ($200k + 6 Máy Tier 3)
             GUI.backgroundColor = new Color(1f, 0.85f, 0.2f);
-            if (GUILayout.Button("🏆 Thử Chiến Thắng ($200K + 6 Tier 3)", GUILayout.Height(30)))
+            if (GUILayout.Button("Thử Chiến Thắng ($200K + 6 Tier 3)", GUILayout.Height(30)))
             {
                 if (FactoryManager.Instance != null)
                 {

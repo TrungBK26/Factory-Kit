@@ -60,7 +60,7 @@ public class HUDView : MonoBehaviour
     {
         if (moneyText != null)
         {
-            moneyText.text = $"💰 ${newWallet:N0}";
+            moneyText.text = $"$ {newWallet:N0}";
         }
     }
 
@@ -71,7 +71,7 @@ public class HUDView : MonoBehaviour
         int max = playerCarry != null ? playerCarry.MaxCapacity : 5;
         if (capacityText != null)
         {
-            capacityText.text = $"📦 {currentCount}/{max}";
+            capacityText.text = $"{currentCount}/{max}";
         }
     }
 

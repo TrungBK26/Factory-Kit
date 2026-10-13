@@ -171,12 +171,12 @@ public class VictoryPopup : MonoBehaviour
         GUI.Box(new Rect(x, y, popW, popH), GUIContent.none, UIThemeManager.PanelStyle);
 
         GUILayout.BeginArea(new Rect(x + 22, y + 20, popW - 44, popH - 40));
-        GUILayout.Label("<size=22><b>🏆 CHIẾN THẮNG TUYỆT ĐỐI!</b></size>", UIThemeManager.HeaderStyle);
+        GUILayout.Label("<size=22><b>CHIẾN THẮNG TUYỆT ĐỐI!</b></size>", UIThemeManager.HeaderStyle);
         GUILayout.Space(8);
 
         int target = WinConditionChecker.Instance != null ? WinConditionChecker.Instance.WinMoneyTarget : 200000;
         string monologue =
-            "<b>💬 Lời tự thoại của bạn:</b>\n" +
+            "<b>Lời tự thoại của bạn:</b>\n" +
             $"<i>\"Cha ơi... con đã làm được rồi! Khu công xưởng hoang tàn năm xưa giờ đã rực sáng với 6 dây chuyền sản xuất hiện đại nhất, ngân khố đã vượt ${target:N0}! Danh tiếng của gia đình ta đã được khôi phục trọn vẹn!\"</i>\n\n" +
             "• Mở khóa hoàn tất 6/6 dòng tài nguyên (Gỗ -> Vàng)\n" +
             "• Nâng cấp toàn bộ cỗ máy lên Tier 3 tối đa\n" +
@@ -189,7 +189,7 @@ public class VictoryPopup : MonoBehaviour
         GUILayout.Space(12);
 
         GUI.backgroundColor = new Color(0.35f, 0.95f, 0.40f);
-        if (GUILayout.Button("🚀 Tiếp Tục Chơi Tự Do (Free Play)", UIThemeManager.ButtonStyle, GUILayout.Height(38)))
+        if (GUILayout.Button("Tiếp Tục Chơi Tự Do (Free Play)", UIThemeManager.ButtonStyle, GUILayout.Height(38)))
         {
             OnFreePlayClicked();
         }
@@ -197,13 +197,13 @@ public class VictoryPopup : MonoBehaviour
         GUILayout.Space(6);
         GUILayout.BeginHorizontal();
         GUI.backgroundColor = new Color(0.95f, 0.80f, 0.35f);
-        if (GUILayout.Button("🏠 Về Menu Chính", UIThemeManager.ButtonStyle, GUILayout.Height(34)))
+        if (GUILayout.Button("Về Menu Chính", UIThemeManager.ButtonStyle, GUILayout.Height(34)))
         {
             OnReturnToMainMenuClicked();
         }
 
         GUI.backgroundColor = new Color(1f, 0.55f, 0.55f);
-        if (GUILayout.Button("🔄 Chơi Lại Từ Đầu", UIThemeManager.ButtonStyle, GUILayout.Height(34)))
+        if (GUILayout.Button("Chơi Lại Từ Đầu", UIThemeManager.ButtonStyle, GUILayout.Height(34)))
         {
             OnRestartClicked();
         }
