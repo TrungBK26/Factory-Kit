@@ -41,7 +41,13 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioSource sfxSource;
 
     [Header("--- DANH MỤC AUDIO CLIPS (TÙY CHỌN GẮN FILE) ---")]
-    [Tooltip("Nhạc nền chủ đạo")]
+    [Tooltip("Nhạc nền trong game (Track 36: Village)")]
+    [SerializeField] private AudioClip bgmGameplay;
+
+    [Tooltip("Nhạc nền Menu Chính (Track 38: Intro)")]
+    [SerializeField] private AudioClip bgmMenu;
+
+    [Tooltip("Nhạc nền chủ đạo (Tương thích ngược)")]
     [SerializeField] private AudioClip bgmFactoryGroove;
 
     [Tooltip("Tiếng máy nhả vật phẩm")]
@@ -104,7 +110,29 @@ public class SoundManager : MonoBehaviour
         }
 
         ApplyVolumes();
-        PlayBGM();
+        EnsureBGMClipsLoaded();
+
+        if (MainMenuUI.Instance != null && MainMenuUI.Instance.IsOpen)
+        {
+            PlayMenuBGM();
+        }
+        else
+        {
+            PlayGameplayBGM();
+        }
+    }
+
+    private void Start()
+    {
+        EnsureBGMClipsLoaded();
+        if (MainMenuUI.Instance != null && MainMenuUI.Instance.IsOpen)
+        {
+            PlayMenuBGM();
+        }
+        else
+        {
+            PlayGameplayBGM();
+        }
     }
 
     private void OnEnable()
@@ -136,13 +164,46 @@ public class SoundManager : MonoBehaviour
         if (sfxSource != null) sfxSource.volume = sfxVol;
     }
 
+    private void EnsureBGMClipsLoaded()
+    {
+        if (bgmGameplay == null)
+        {
+            bgmGameplay = Resources.Load<AudioClip>("Audio/BGM_Gameplay");
+            if (bgmGameplay == null) bgmGameplay = bgmFactoryGroove;
+        }
+
+        if (bgmMenu == null)
+        {
+            bgmMenu = Resources.Load<AudioClip>("Audio/BGM_Menu");
+        }
+    }
+
+    public void PlayMenuBGM()
+    {
+        EnsureBGMClipsLoaded();
+        AudioClip target = bgmMenu != null ? bgmMenu : (bgmGameplay != null ? bgmGameplay : bgmFactoryGroove);
+        PlayBGMClip(target);
+    }
+
+    public void PlayGameplayBGM()
+    {
+        EnsureBGMClipsLoaded();
+        AudioClip target = bgmGameplay != null ? bgmGameplay : bgmFactoryGroove;
+        PlayBGMClip(target);
+    }
+
     public void PlayBGM()
     {
-        if (bgmSource != null && bgmFactoryGroove != null)
-        {
-            bgmSource.clip = bgmFactoryGroove;
-            bgmSource.Play();
-        }
+        PlayGameplayBGM();
+    }
+
+    private void PlayBGMClip(AudioClip clip)
+    {
+        if (bgmSource == null || clip == null) return;
+        if (bgmSource.clip == clip && bgmSource.isPlaying) return;
+
+        bgmSource.clip = clip;
+        bgmSource.Play();
     }
 
     public void PlaySFX(AudioClip clip, float pitch = 1.0f)

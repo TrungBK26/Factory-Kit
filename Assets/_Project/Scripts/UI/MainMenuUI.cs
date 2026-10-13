@@ -35,6 +35,7 @@ public class MainMenuUI : MonoBehaviour
     private bool isOpen = true; // Mở khi vừa khởi động game
     private bool showCredits = false;
     private bool showNewGameConfirm = false;
+    private Vector2 creditsScrollPos = Vector2.zero;
 
     private Texture2D bgTexture;
 
@@ -89,6 +90,10 @@ public class MainMenuUI : MonoBehaviour
         if (isOpen)
         {
             ApplyMenuState();
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlayMenuBGM();
+            }
         }
     }
 
@@ -107,6 +112,10 @@ public class MainMenuUI : MonoBehaviour
         if (isOpen)
         {
             ApplyMenuState();
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlayMenuBGM();
+            }
         }
     }
 
@@ -143,7 +152,11 @@ public class MainMenuUI : MonoBehaviour
         showCredits = false;
         showNewGameConfirm = false;
         ApplyMenuState();
-        Debug.Log("[MainMenu] Đã mở Menu Chính.");
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayMenuBGM();
+        }
+        Debug.Log("[MainMenu] Đã mở Menu Chính, phát BGM Menu (Track 38).");
     }
 
     public void CloseMenu()
@@ -160,7 +173,11 @@ public class MainMenuUI : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        Debug.Log("[MainMenu] Đã đóng Menu Chính, bắt đầu chơi.");
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayGameplayBGM();
+        }
+        Debug.Log("[MainMenu] Đã đóng Menu Chính, bắt đầu chơi, phát BGM Gameplay (Track 36).");
     }
 
     private void ApplyMenuState()
@@ -374,12 +391,12 @@ public class MainMenuUI : MonoBehaviour
     private void DrawCreditsModal(float screenW, float screenH)
     {
         // Làm tối hậu cảnh
-        GUI.color = new Color(0f, 0f, 0f, 0.75f);
+        GUI.color = new Color(0f, 0f, 0f, 0.78f);
         GUI.DrawTexture(new Rect(0, 0, screenW, screenH), Texture2D.whiteTexture);
         GUI.color = Color.white;
 
-        float modalW = Mathf.Min(560f, screenW - 40f);
-        float modalH = Mathf.Min(390f, screenH - 40f);
+        float modalW = Mathf.Min(640f, screenW - 40f);
+        float modalH = Mathf.Min(490f, screenH - 40f);
         float modalX = (screenW - modalW) / 2f;
         float modalY = (screenH - modalH) / 2f;
 
@@ -388,15 +405,52 @@ public class MainMenuUI : MonoBehaviour
 
         GUILayout.BeginArea(new Rect(modalX + 22, modalY + 18, modalW - 44, modalH - 36));
 
-        GUILayout.Label("<b>FACTORY KIT - THÔNG TIN DỰ ÁN</b>", UIThemeManager.HeaderStyle);
-        GUILayout.Space(12);
+        GUILayout.Label("<size=18><b>FACTORY KIT: REBORN - THÔNG TIN ĐỘI NGŨ</b></size>", UIThemeManager.HeaderStyle);
+        GUILayout.Space(8);
 
+        // Khung cuộn nội dung Credit chi tiết & chuyên nghiệp
         GUILayout.BeginVertical(UIThemeManager.InteriorBoxStyle);
-        GUILayout.Label("• <b>Định hướng & Lập trình:</b> Pair Programming with Antigravity AI\n" +
-                        "• <b>Tài nguyên 2D & UI:</b> Ninja Adventure - Asset Pack (CC0 1.0 Universal)\n" +
-                        "• <b>Đồ họa 3D Diorama:</b> Custom Low-Poly Art & Shaders\n" +
-                        "• <b>Nhân vật & Hoạt ảnh:</b> Blender Custom Rigging & Animator Integration\n" +
-                        "• <b>Âm thanh:</b> Pixel 8-Bit Retro Audio Library (CC0 License)", UIThemeManager.LabelStyle);
+        creditsScrollPos = GUILayout.BeginScrollView(creditsScrollPos, GUILayout.Height(modalH - 120));
+
+        GUILayout.Label("<size=14><color=#FFEAA7><b>👑 ĐỘI NGŨ PHÁT TRIỂN & SẢN XUẤT</b></color></size>", UIThemeManager.SubHeaderStyle);
+        GUILayout.Label("• <b>Trưởng Dự Án & Thiết Kế Trò Chơi (Director & Lead Designer):</b> <b>K</b>\n" +
+                        "• <b>Lập Trình Viên Chính (Lead Gameplay Programmer):</b> <b>K</b>\n" +
+                        "• <b>Cố Vấn Kỹ Thuật & Cặp Đôi Lập Trình:</b> Pair Programming with Antigravity AI (Google DeepMind)", UIThemeManager.LabelStyle);
+
+        GUILayout.Space(10);
+        GUILayout.Label("<size=14><color=#FFEAA7><b>🎨 ĐỒ HỌA 3D & MÔ HÌNH HÓA (3D ASSETS)</b></color></size>", UIThemeManager.SubHeaderStyle);
+        GUILayout.Label("• <b>Mô Hình 3D Generative AI (Nguồn thứ 3):</b> Tripo3D & Meshy AI\n" +
+                        "• <b>Tinh Chỉnh, Retopology & UV Mapping:</b> <b>K</b> (Blender 4.x)\n" +
+                        "• <b>Hệ Thống Đường Xá & Spline URP:</b> Custom LowPolyRoad Mesh Generator\n" +
+                        "• <b>Rigging & Hoạt Ảnh Nhân Vật Chibi:</b> Blender Rigging, Mixamo & Custom Animator\n" +
+                        "• <b>Shaders & Hiệu Ứng Ánh Sáng:</b> Universal Render Pipeline (URP) Custom Low-Poly Shaders", UIThemeManager.LabelStyle);
+
+        GUILayout.Space(10);
+        GUILayout.Label("<size=14><color=#FFEAA7><b>🖼️ GIAO DIỆN 2D & NGHỆ THUẬT RETRO (UI DESIGN)</b></color></size>", UIThemeManager.SubHeaderStyle);
+        GUILayout.Label("• <b>Bộ Giao Diện Theme Gỗ Pixel Retro:</b> Ninja Adventure Asset Pack (CC0 1.0 Universal)\n" +
+                        "• <b>Thiết Kế Tablet Quản Lý & HUD:</b> Responsive Retro Wood UI System\n" +
+                        "• <b>Bức Thư Cốt Truyện Người Cha:</b> Custom Calligraphy Parchment Art", UIThemeManager.LabelStyle);
+
+        GUILayout.Space(10);
+        GUILayout.Label("<size=14><color=#FFEAA7><b>🎵 ÂM THANH & ÂM NHẠC (AUDIO & SFX)</b></color></size>", UIThemeManager.SubHeaderStyle);
+        GUILayout.Label("• <b>Nhạc Nền Menu Chính:</b> Track 38 - Intro (CC0 Retro Chiptune Library)\n" +
+                        "• <b>Nhạc Nền Gameplay Trong Xưởng:</b> Track 36 - Village (CC0 Retro Chiptune Library)\n" +
+                        "• <b>Hiệu Ứng Âm Thanh Tương Tác:</b> 8-Bit Chiptune SFX Library (CC0 License)", UIThemeManager.LabelStyle);
+
+        GUILayout.Space(10);
+        GUILayout.Label("<size=14><color=#FFEAA7><b>⚙️ CÔNG CỤ & CÔNG NGHỆ SỬ DỤNG</b></color></size>", UIThemeManager.SubHeaderStyle);
+        GUILayout.Label("• <b>Game Engine:</b> Unity 6 (6000.4.11f1) - DirectX 12 & URP\n" +
+                        "• <b>Phần Mềm Đồ Họa:</b> Blender 4.x, Tripo3D Unity Bridge\n" +
+                        "• <b>Trợ Lý Lập Trình AI:</b> Google Antigravity Agentic IDE\n" +
+                        "• <b>Quản Lý Phiên Bản:</b> Git & GitHub Desktop", UIThemeManager.LabelStyle);
+
+        GUILayout.Space(10);
+        GUILayout.Label("<size=14><color=#FFEAA7><b>❤️ LỜI CẢM ƠN ĐẶC BIỆT (SPECIAL THANKS)</b></color></size>", UIThemeManager.SubHeaderStyle);
+        GUILayout.Label("• Ban Tổ Chức & Cộng Đồng Cuộc Thi <b>Game Sprint 2026</b>\n" +
+                        "• Cộng đồng phát triển game Unity & các dự án mã nguồn mở CC0\n" +
+                        "• Và toàn thể những người chơi đã dành thời gian trải nghiệm <b>Factory Kit: Reborn</b>!", UIThemeManager.LabelStyle);
+
+        GUILayout.EndScrollView();
         GUILayout.EndVertical();
 
         GUILayout.FlexibleSpace();
