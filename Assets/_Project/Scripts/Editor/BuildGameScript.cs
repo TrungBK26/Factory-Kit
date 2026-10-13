@@ -1,5 +1,6 @@
 using System.IO;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
@@ -12,11 +13,68 @@ public static class BuildGameScript
     private const string ScenePath = "Assets/_Project/Scenes/PrototypeScene.unity";
     private const string OutputFolder = "Builds/PC";
     private const string ExeName = "FactoryKit.exe";
+    private const string IconPath = "Assets/_Project/Textures/UI/GameIcon.png";
+    private const string SplashBgPath = "Assets/_Project/Textures/UI/MainMenu_Background.png";
+
+    [MenuItem("FactoryKit/🎨 Cập Nhật Icon Game & Màn Hình Khởi Động (Splash Screen)", false, 5)]
+    public static void ConfigureGameIconAndSplash()
+    {
+        AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+
+        // 1. Cấu hình Icon ứng dụng (.exe)
+        Texture2D icon = AssetDatabase.LoadAssetAtPath<Texture2D>(IconPath);
+        if (icon != null)
+        {
+            try
+            {
+                int[] defaultSizes = PlayerSettings.GetIconSizes(NamedBuildTarget.Unknown, IconKind.Application);
+                if (defaultSizes != null && defaultSizes.Length > 0)
+                {
+                    Texture2D[] defaultIcons = new Texture2D[defaultSizes.Length];
+                    for (int i = 0; i < defaultIcons.Length; i++) defaultIcons[i] = icon;
+                    PlayerSettings.SetIcons(NamedBuildTarget.Unknown, defaultIcons, IconKind.Application);
+                }
+
+                int[] standaloneSizes = PlayerSettings.GetIconSizes(NamedBuildTarget.Standalone, IconKind.Application);
+                if (standaloneSizes != null && standaloneSizes.Length > 0)
+                {
+                    Texture2D[] standaloneIcons = new Texture2D[standaloneSizes.Length];
+                    for (int i = 0; i < standaloneIcons.Length; i++) standaloneIcons[i] = icon;
+                    PlayerSettings.SetIcons(NamedBuildTarget.Standalone, standaloneIcons, IconKind.Application);
+                }
+
+                Debug.Log($"[BuildGameScript] ✅ Đã cập nhật Icon Game thành công ({IconPath})");
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogWarning($"[BuildGameScript] Gán Icon: {ex.Message}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[BuildGameScript] Chưa tìm thấy texture icon tại: {IconPath}");
+        }
+
+        // 2. Cấu hình Ảnh nền màn hình chờ khởi động (Splash Screen Background)
+        Sprite splashSprite = AssetDatabase.LoadAssetAtPath<Sprite>(SplashBgPath);
+        if (splashSprite != null)
+        {
+            PlayerSettings.SplashScreen.show = true;
+            PlayerSettings.SplashScreen.background = splashSprite;
+            PlayerSettings.SplashScreen.blurBackgroundImage = false;
+            Debug.Log($"[BuildGameScript] ✅ Đã cập nhật Splash Background thành công ({SplashBgPath})");
+        }
+
+        AssetDatabase.SaveAssets();
+    }
 
     [MenuItem("FactoryKit/🚀 Build Game PC Standalone (.exe)", false, 10)]
     public static void BuildWindowsPC()
     {
         Debug.Log("[BuildGameScript] Bắt đầu quá trình Build Game PC Standalone cho cuộc thi Game Sprint 2026...");
+
+        // Tự động đồng bộ Icon và Màn hình chờ đẹp mắt trước khi Build
+        ConfigureGameIconAndSplash();
 
         // 1. Kiểm tra Scene tồn tại
         if (!File.Exists(ScenePath))
